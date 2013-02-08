@@ -1,7 +1,7 @@
-py-typedbytes
-=============
+pytypedbytes
+============
 
-typedbytes is a Python package that makes it easy to serialize and
+pytypedbytes is a Python package that makes it easy to serialize and
 deserialize Hadoop typed bytes, and to define application-specific
 serializations.
 

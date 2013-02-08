@@ -7,7 +7,7 @@ import os.path
 import subprocess
 
 
-name = "typedbytes"
+name = "pytypedbytes"
 
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
