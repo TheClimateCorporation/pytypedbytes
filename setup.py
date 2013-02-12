@@ -5,6 +5,7 @@ from distutils.core import setup
 from distutils.errors import DistutilsExecError
 import os.path
 import subprocess
+import traceback
 
 
 name = "pytypedbytes"
@@ -34,13 +35,19 @@ def get_version_from_git(match=None):
     args = ["git", "describe", "--always", "--dirty", "--debug"]
     if match is not None:
         args += ["--match", match]
-    p = subprocess.Popen(
-        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    exit = p.wait()
-    if exit != 0:
+    try:
+        p = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        exit = p.wait()
+    except:
         raise DistutilsExecError(
             "Error running command '%s':\n%s" %
-            (" ".join(args), p.stderr.read()))
+            (" ".join(args), traceback.format_exc()))
+    else:
+        if exit != 0:
+            raise DistutilsExecError(
+                "Command '%s' returned nonzero exit status: %d\n%s" %
+                (" ".join(args), exit, p.stderr.read()))
     version = p.stdout.read().strip()
     return version
 
