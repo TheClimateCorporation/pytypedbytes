@@ -74,18 +74,18 @@ class BuildAndWriteVersion(Build):
         _ = write_version_file()
 
 
-setup_kwargs = {
-    "name": name,
-    "version": get_version_from_git(),
-    "author": "Steve M. Kim",
-    "author_email": "steve@climate.com",
-    "url": "https://github.com/TheClimateCorporation/py-typedbytes",
-    "description": "A Python package for Hadoop typed bytes",
-    "long_description": read_long_description(),
-    "classifiers": classifiers,
-    "license": "Apache 2.0",
-    "cmdclass": {"build": BuildAndWriteVersion},
-    "packages": [name, "%s.tests" % name],
-    }
-
-setup(**setup_kwargs)
+if __name__ == '__main__':
+    setup_kwargs = {
+        "name": name,
+        "version": get_version_from_git(),
+        "author": "Steve M. Kim",
+        "author_email": "steve@climate.com",
+        "url": "https://github.com/TheClimateCorporation/py-typedbytes",
+        "description": "A Python package for Hadoop typed bytes",
+        "long_description": read_long_description(),
+        "classifiers": classifiers,
+        "license": "Apache 2.0",
+        "cmdclass": {"build": BuildAndWriteVersion},
+        "packages": [name, "%s.tests" % name],
+        }
+    setup(**setup_kwargs)
