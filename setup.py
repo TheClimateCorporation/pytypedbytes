@@ -29,7 +29,7 @@ def read_long_description():
 def get_version_from_git(match=None):
     """Return a version string for the current version.
 
-    This function runs `git --describe` as a subprocess and captures
+    This function runs ``git --describe`` as a subprocess and captures
     the output."""
     args = ["git", "describe", "--always", "--dirty", "--debug"]
     if match is not None:
@@ -63,18 +63,18 @@ def write_version_file():
 
 
 class BuildAndWriteVersion(Build):
-    """A subclass of the `build` class in distutils.command.build whose
-    `run()` method that writes a version file."""
+    """A subclass of the ``build`` class in distutils.command.build
+    whose ``run()`` method that writes a version file."""
     description = __doc__
 
     def run(self):
-        """Call the `run()` method of the superclass, then write the
+        """Call the ``run()`` method of the superclass, then write the
         current version to a version file."""
         Build.run(self)
         _ = write_version_file()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     setup_kwargs = {
         "name": name,
         "version": get_version_from_git(),
