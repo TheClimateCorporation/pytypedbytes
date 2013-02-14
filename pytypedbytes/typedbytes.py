@@ -96,7 +96,7 @@ def load(fp, types=None):
     """Deserialize a readable file-like object *fp* to a Python
     object."""
     if types is None:
-        types = basic_types
+        types = default_types
     type_code = load_type_code(fp)
     for td in types:
         if td.code == type_code:
@@ -120,7 +120,7 @@ def iterload(fp, types=None):
     The returned iterator raises ``StopIteration`` when it encounters a
     0xff byte."""
     if types is None:
-        types = basic_types
+        types = default_types
     while True:
         try:
             obj = load(fp, types)
@@ -135,7 +135,7 @@ def dump(obj, fp, types=None):
     """Serialize *obj* to a writeable file-like object *fp*, flushing
     the output buffer after write."""
     if types is None:
-        types = basic_types
+        types = default_types
     for td in types:
         if isinstance(obj, td.type):
             dump_type_code(td.code, fp)
@@ -163,7 +163,7 @@ def iterdump(fp, types=None):
     its ``.next()`` method once.
     """
     if types is None:
-        types = basic_types
+        types = default_types
     def _write_typed_bytes():
         while True:
             obj = (yield)
@@ -568,7 +568,8 @@ def dump_map(obj, fp, types=None):
         serializer.send(v)
 
 
-basic_types = (
+# Default serializations defined in typed bytes documentation.
+default_types = (
     Type(255, EndOfList, load_end_of_list, dump_end_of_list),
     Type(0, bytearray, load_bytes, dump_bytes),
     # Type code 1 (byte) has no corresponding Python type.

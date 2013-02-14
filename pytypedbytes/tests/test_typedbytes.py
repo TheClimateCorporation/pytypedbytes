@@ -65,6 +65,64 @@ class TypedBytesTestCase(unittest.TestCase):
         for obj in exotic_objects:
             self.assertRaises(TypeError, typedbytes.dumps, obj)
 
+    def test_extensibility(self):
+        """Test the ability to define serializations for additional
+        types."""
+        # Define a serialization for Python's ``set`` type.
+        def load_set(fp, types=None):
+            return set(typedbytes.load_list(fp, types))
+
+        def dump_set(obj, fp, types=None):
+            typedbytes.dump_list(obj, fp, types)
+
+        new_type = typedbytes.Type(111, set, load_set, dump_set)
+        custom_types = typedbytes.default_types + (new_type,)
+        expected = [
+            bytearray("\x0a\x0b\x0c"),
+            set([-0.1, False, 27]), # set is not a default type
+            {"ab": -0.1, "cd": False, True: 27},
+            ]
+        fp = StringIO()
+        serializer = typedbytes.iterdump(fp, custom_types)
+        for obj in expected:
+            serializer.send(obj)
+        serializer.close()
+        fp.seek(0)
+        deserializer = typedbytes.iterload(fp, custom_types)
+        computed = [deserializer.next() for _ in xrange(len(expected))]
+        self.assertRaises(StopIteration, deserializer.next)
+        self.assertEqual(expected, computed)
+
+    def test_deserialization_of_unrecognized_type_code(self):
+        """Test that a ValueError is raised when attempting to
+        deserialize a byte stream that starts with an unrecognized type
+        code."""
+        # Define a serialization for Python's ``set`` type.
+        def load_set(fp, types=None):
+            return set(typedbytes.load_list(fp, types))
+
+        def dump_set(obj, fp, types=None):
+            typedbytes.dump_list(obj, fp, types)
+
+        new_type = typedbytes.Type(111, set, load_set, dump_set)
+        custom_types = typedbytes.default_types + (new_type,)
+        expected = [
+            bytearray("\x0a\x0b\x0c"),
+            set([-0.1, False, 27]), # set is not a default type
+            {"ab": -0.1, "cd": False, True: 27},
+            ]
+        fp = StringIO()
+        # Serialize with this custom type definition.
+        serializer = typedbytes.iterdump(fp, custom_types)
+        for obj in expected:
+            serializer.send(obj)
+        serializer.close()
+        fp.seek(0)
+        # Deserialize without this custom type definition.
+        deserializer = typedbytes.iterload(fp, typedbytes.default_types)
+        self.assertEqual(expected[0], deserializer.next())
+        self.assertRaises(ValueError, deserializer.next)
+
 
 if __name__ == "__main__":
     unittest.main()
