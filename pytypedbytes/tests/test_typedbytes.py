@@ -3,6 +3,7 @@
 import unittest
 import struct
 from collections import namedtuple
+from math import isnan
 from StringIO import StringIO
 
 from pytypedbytes import typedbytes
@@ -20,6 +21,7 @@ class TypedBytesTestCase(unittest.TestCase):
             1125899906842624L, # long
             struct.unpack('>f', "abcd")[0], # float
             struct.unpack('>d', "abcdefgh")[0], # double
+            float('inf'), # double
             u" śpăm\n ", # string
             (-0.1, False, 27), # tuple ("vector" in typed bytes)
             [-0.1, False, 27], # list
@@ -35,6 +37,10 @@ class TypedBytesTestCase(unittest.TestCase):
         computed = [deserializer.next() for _ in xrange(len(expected))]
         self.assertRaises(StopIteration, deserializer.next)
         self.assertEqual(expected, computed)
+
+    def test_NaN_round_trip(self):
+        obj = float('nan')
+        self.assertTrue(isnan(typedbytes.loads(typedbytes.dumps(obj))))
 
     def test_serialization_respects_type_inheritance(self):
         """Test that the serialization type of an object is inferred by

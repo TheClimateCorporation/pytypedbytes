@@ -1,6 +1,7 @@
 from collections import namedtuple
 from cStringIO import StringIO
 from itertools import islice
+from math import isnan
 from struct import Struct
 from types import ClassType
 
@@ -409,10 +410,12 @@ def dump_float(write, obj, types=None):
 
     To serialize Python's builtin float type, use the ``dump_double()``
     function instead."""
-    if float(obj) != obj:
+    coerced_obj = float(obj)
+    if (not isnan(coerced_obj)) and (coerced_obj != obj):
         raise TypeError(
             "Object must be coercible to float without loss of information.")
-    # Check for loss of precision
+    # Check for loss of precision when packing as a 32-bit signed IEEE
+    # floating point number.
     string = float_struct.pack(obj)
     if float_struct.unpack(string) != (obj,):
         raise TypeError(
@@ -437,7 +440,8 @@ def dump_double(obj, fp, types=None):
     This function calls the ``write()`` method of *fp* to write 8 bytes
     that represent *obj* as a big-endian 64-bit signed IEEE floating
     point number."""
-    if float(obj) != obj:
+    coerced_obj = float(obj)
+    if (not isnan(coerced_obj)) and (coerced_obj != obj):
         raise TypeError(
             "Object must be coercible to float without loss of information.")
     double_struct.pack_write(fp, obj)
