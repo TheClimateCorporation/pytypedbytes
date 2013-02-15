@@ -75,12 +75,23 @@ class TypedBytesTestCase(unittest.TestCase):
         def dump_set(obj, fp, types=None):
             typedbytes.dump_list(obj, fp, types)
 
-        new_type = typedbytes.Type(111, set, load_set, dump_set)
-        custom_types = typedbytes.default_types + (new_type,)
+        set_type = typedbytes.Type(111, set, load_set, dump_set)
+
+        # Define a serialization for Python's ``NoneType``
+        def load_null(fp, types=None):
+            return None
+
+        def dump_null(obj, fp, types=None):
+            typedbytes.dump_end_of_list(obj, fp, types)
+
+        null_type = typedbytes.Type(47, type(None), load_null, dump_null)
+
+        custom_types = typedbytes.default_types + (set_type, null_type)
         expected = [
             bytearray("\x0a\x0b\x0c"),
             set([-0.1, False, 27]), # set is not a default type
             {"ab": -0.1, "cd": False, True: 27},
+            None, # NoneType is a not a default type
             ]
         fp = StringIO()
         serializer = typedbytes.iterdump(fp, custom_types)
