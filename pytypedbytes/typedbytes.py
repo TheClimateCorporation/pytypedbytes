@@ -103,7 +103,7 @@ def load(fp, types=None):
             obj = td.load(fp)
             break
     else:
-        raise ValueError("Unrecognized type code.")
+        raise ValueError("Unrecognized type code: %d" % type_code)
     return obj
 
 
@@ -142,7 +142,7 @@ def dump(obj, fp, types=None):
             td.dump(obj, fp, types)
             break
     else:
-        raise TypeError("Object is not serializable.")
+        raise TypeError("Object is not serializable: %s." % obj)
     fp.flush()
 
 
@@ -293,7 +293,7 @@ def load_boolean(fp, types=None):
     elif i == 1:
         return True
     else:
-        raise ValueError("%d is not a recognized value for boolean")
+        raise ValueError("%d is not a recognized value for boolean" % i)
 
 
 def dump_boolean(obj, fp, types=None):
