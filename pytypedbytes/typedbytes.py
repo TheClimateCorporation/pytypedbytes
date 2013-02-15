@@ -98,9 +98,9 @@ def load(fp, types=None):
     if types is None:
         types = default_types
     type_code = load_type_code(fp)
-    for td in types:
-        if td.code == type_code:
-            obj = td.load(fp)
+    for t in types:
+        if t.code == type_code:
+            obj = t.load(fp, types)
             break
     else:
         raise ValueError("Unrecognized type code: %d" % type_code)

@@ -89,9 +89,9 @@ class TypedBytesTestCase(unittest.TestCase):
         custom_types = typedbytes.default_types + (set_type, null_type)
         expected = [
             bytearray("\x0a\x0b\x0c"),
-            set([-0.1, False, 27]), # set is not a default type
+            [set([-0.1, False, 27])], # set is not a default type
             {"ab": -0.1, "cd": False, True: 27},
-            None, # NoneType is a not a default type
+            [None], # NoneType is a not a default type
             ]
         fp = StringIO()
         serializer = typedbytes.iterdump(fp, custom_types)
