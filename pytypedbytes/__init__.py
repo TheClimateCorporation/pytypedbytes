@@ -65,4 +65,6 @@ A reference implementation of typed bytes in Java is provided by the
 org.apache.hadoop.typedbytes package.
 """
 
-from version import __version__
+# This variable is the authoritative package version. The setup.py
+# packaging script must rely on this variable for version awareness.
+__version__ = "0.1"
